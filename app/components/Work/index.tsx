@@ -69,7 +69,7 @@ const projects = [
     id: 3,
     title: "Eat the Metaballs",
     description: "GLSL shader-based game design with a focus on interactive graphics.",
-    image: "/Metaball_cover2.png",
+    image: "/metaball.png",
     tags: ["Game Design", "Interactive Graphics", "GLSL"],
     link: "#",
   },
@@ -127,10 +127,10 @@ export default function Work() {
                 className={styles.projectImage}
                 quality={95}
                 priority={project.id <= 3}
-                unoptimized={project.image === "/Metaball_cover2.png"}
                 onError={(e) => {
                   console.error(`Failed to load image: ${project.image}`, e);
-                  e.currentTarget.src = "/Metaball_cover.png";
+                  const target = e.currentTarget as HTMLImageElement;
+                  target.src = "/Diabolum_1.png";
                 }}
               />
 
