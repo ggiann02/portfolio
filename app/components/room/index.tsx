@@ -21,7 +21,7 @@ const RoomModel3D: React.FC = () => {
       if (mesh.material) {
         const material = mesh.material as THREE.Material
         if ('wireframe' in material) {
-          (material as any).wireframe = false
+          (material as THREE.MeshBasicMaterial | THREE.MeshLambertMaterial | THREE.MeshPhongMaterial).wireframe = false
         }
         // Remove any debug materials
         if (material.name && material.name.includes('bbox')) {
