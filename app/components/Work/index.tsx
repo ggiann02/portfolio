@@ -130,7 +130,7 @@ export default function Work() {
                 unoptimized={project.image === "/Metaball_cover2.png"}
                 onError={(e) => {
                   console.error(`Failed to load image: ${project.image}`, e);
-                  e.currentTarget.src = "/Diabolum_1.png";
+                  e.currentTarget.src = "/Metaball_cover.png";
                 }}
               />
 
