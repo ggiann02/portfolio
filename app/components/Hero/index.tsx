@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import React, { Suspense, useRef } from "react"
@@ -16,16 +18,28 @@ const styles = {
   leftColumn: "w-full lg:w-1/2 space-y-8",
   heading: "text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight tracking-tight",
   ctaButton: "bg-black text-white hover:bg-gray-800 px-8 py-3 text-sm font-medium tracking-wider rounded-none",
-  rightColumn: "w-full lg:w-1/2",
-  roomModel: "w-full h-[500px]",
+  rightColumn: "w-full lg:w-1/2 overflow-visible",
+  roomModel: "w-full h-[500px] overflow-visible",
   imagePlaceholder: "aspect-[4/3] bg-gray-300 rounded-2xl w-full",
   mobileNav: "md:hidden fixed bottom-6 left-6 right-6",
   mobileNavContent: "bg-white border border-gray-200 rounded-lg shadow-lg p-4",
   mobileNavLinks: "flex justify-center space-x-8",
-  mobileNavLink: "text-sm font-medium hover:opacity-70 transition-opacity"
+  mobileNavLink: "text-sm font-medium hover:opacity-70 transition-opacity",
+  scrollArrow: "absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer hover:opacity-70 transition-opacity animate-bounce",
+  arrowIcon: "w-8 h-8 text-black"
 }
 
 export default function HeroSection() {
+  const scrollToNextSection = () => {
+    const nextSection = document.querySelector('[data-section="next"]')
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      // Fallback: scroll down by viewport height
+      window.scrollBy({ top: window.innerHeight, behavior: 'smooth' })
+    }
+  }
+
   return (
     <div className={styles.container}>
       {/* Navigation Header */}
@@ -103,6 +117,23 @@ export default function HeroSection() {
             </Link>
           </div>
         </div>
+      </div>
+
+      {/* Scroll Down Arrow */}
+      <div className={styles.scrollArrow} onClick={scrollToNextSection}>
+        <svg 
+          className={styles.arrowIcon} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth={2} 
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"
+          />
+        </svg>
       </div>
     </div>
   )

@@ -3,15 +3,43 @@
 import React, { Suspense, useEffect } from "react"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls, Environment, useGLTF } from "@react-three/drei"
+import dynamic from "next/dynamic"
 
 // Your room model component
 const RoomModel3D: React.FC = () => {
-  const { scene } = useGLTF('/room.glb')
+  const { scene } = useGLTF('/roomcheck.glb')
   
   // Clone the scene to avoid potential issues with Chrome
   const clonedScene = scene.clone()
   
-  return <primitive object={clonedScene} scale={1} />
+  // Remove any wireframe or bounding box helpers
+  clonedScene.traverse((child: any) => {
+    if (child.isMesh) {
+      // Ensure material is not wireframe
+      if (child.material) {
+        child.material.wireframe = false
+        // Remove any debug materials
+        if (child.material.name && child.material.name.includes('bbox')) {
+          child.visible = false
+        }
+      }
+    }
+    // Remove any helper objects (bounding boxes, wireframes, etc.)
+    if (
+      child.type === 'BoxHelper' || 
+      child.type === 'Box3Helper' || 
+      child.type === 'WireframeGeometry' ||
+      child.type === 'LineSegments' ||
+      child.name.includes('helper') ||
+      child.name.includes('bbox') ||
+      child.name.includes('wireframe') ||
+      child.name.includes('bound')
+    ) {
+      child.visible = false
+    }
+  })
+  
+  return <primitive object={clonedScene} scale={1} rotation={[0, Math.PI, 0]} />
 }
 
 // Loading component
@@ -31,111 +59,83 @@ const ErrorFallback: React.FC = () => (
   </div>
 )
 
+// Three.js Canvas component wrapped to prevent SSR
+const ThreeJSCanvas: React.FC = () => {
+  return (
+    <Canvas
+      shadows
+      camera={{ 
+        position: [3, 1.5, 3], 
+        fov: 40
+      }}
+      style={{ background: 'transparent' }}
+      gl={{
+        powerPreference: "default",
+        antialias: false,
+        alpha: true,
+        preserveDrawingBuffer: false,
+        failIfMajorPerformanceCaveat: false,
+        premultipliedAlpha: false,
+        stencil: false,
+        depth: true,
+        logarithmicDepthBuffer: false,
+        precision: "mediump"
+      }}
+      dpr={1}
+      linear={false}
+      flat={false}
+      frameloop="demand"
+      onCreated={({ gl }) => {
+        console.log('Three.js WebGL context created')
+      }}
+    >
+      <Environment preset="apartment" />
+      <ambientLight intensity={0.2} />
+      <directionalLight
+        position={[10, 10, 5]}
+        intensity={1}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+      />
+
+      <RoomModel3D />
+
+      <OrbitControls
+        enablePan={true}
+        enableZoom={true}
+        enableRotate={true}
+        maxDistance={8}
+        minDistance={1}
+        maxPolarAngle={Math.PI / 2}
+        target={[0, 0.5, 0]}
+      />
+    </Canvas>
+  )
+}
+
+// Dynamically import the Canvas to prevent SSR
+const DynamicThreeJSCanvas = dynamic(() => Promise.resolve(ThreeJSCanvas), {
+  ssr: false,
+  loading: () => <LoadingSpinner />
+})
+
 // Main component that wraps the 3D scene
 const RoomModel: React.FC = () => {
-  const [hasWebGL, setHasWebGL] = React.useState<boolean | null>(null)
-  const [error, setError] = React.useState<string | null>(null)
+  const [isMounted, setIsMounted] = React.useState(false)
 
   useEffect(() => {
-    // Check WebGL support
-    const checkWebGL = () => {
-      try {
-        const canvas = document.createElement('canvas')
-        const gl = canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl') as WebGLRenderingContext | null
-        
-        if (!gl) {
-          setHasWebGL(false)
-          setError('WebGL not supported')
-          return false
-        }
-        
-        // Check for specific Chrome issues
-        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info')
-        if (debugInfo) {
-          const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
-          console.log('WebGL Renderer:', renderer)
-        }
-        
-        setHasWebGL(true)
-        return true
-      } catch (err) {
-        console.error('WebGL check failed:', err)
-        setHasWebGL(false)
-        setError(`WebGL error: ${err}`)
-        return false
-      }
-    }
-
-    checkWebGL()
+    setIsMounted(true)
   }, [])
 
-  // Show loading while checking WebGL
-  if (hasWebGL === null) {
+  if (!isMounted) {
     return <LoadingSpinner />
   }
 
-  // Show error if no WebGL support
-  if (!hasWebGL || error) {
-    return <ErrorFallback />
-  }
-
   return (
-    <div className="w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50">
+    <div className="w-full h-full">
       <Suspense fallback={<LoadingSpinner />}>
-        <Canvas
-          shadows
-          camera={{ position: [5, 2, 5], fov: 50 }}
-          style={{ background: 'transparent' }}
-          gl={{
-            powerPreference: "default",
-            antialias: false, // Try disabling antialiasing for Chrome
-            alpha: true,
-            preserveDrawingBuffer: false,
-            failIfMajorPerformanceCaveat: false,
-            premultipliedAlpha: false, // Change this for Chrome
-            stencil: false,
-            depth: true,
-            logarithmicDepthBuffer: false,
-            precision: "mediump" // Lower precision for Chrome compatibility
-          }}
-          dpr={1} // Fixed DPR for Chrome
-          linear={false} // Try disabling linear
-          flat={false} // Try disabling flat
-          frameloop="demand" // Only render when needed
-          onCreated={({ gl, scene }) => {
-            console.log('Three.js WebGL context created')
-            console.log('Three.js renderer info:', gl.info)
-            console.log('WebGL context:', gl.getContext())
-          }}
-          onError={(error) => {
-            console.error('Three.js Canvas error:', error)
-            setError(`Canvas error: ${error}`)
-          }}
-        >
-          {/* Environment and lighting */}
-          <Environment preset="apartment" />
-          <ambientLight intensity={0.4} />
-          <directionalLight
-            position={[10, 10, 5]}
-            intensity={1}
-            castShadow
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-          />
-
-          {/* Your 3D Room Model */}
-          <RoomModel3D />
-
-          {/* Camera controls */}
-          <OrbitControls
-            enablePan={false}
-            enableZoom={true}
-            enableRotate={true}
-            maxDistance={15}
-            minDistance={3}
-            maxPolarAngle={Math.PI / 2}
-          />
-        </Canvas>
+        <DynamicThreeJSCanvas />
       </Suspense>
     </div>
   )
