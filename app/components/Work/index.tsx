@@ -125,6 +125,11 @@ export default function Work() {
                 className={styles.projectImage}
                 quality={95}
                 priority={project.id <= 3}
+                unoptimized={project.image === "/Metaball_cover2.png"}
+                onError={(e) => {
+                  console.error(`Failed to load image: ${project.image}`, e);
+                  e.currentTarget.src = "/Diabolum_1.png";
+                }}
               />
 
               {/* Hover Overlay */}
