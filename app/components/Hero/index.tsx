@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import React, { Suspense, useRef } from "react"
+import React from "react"
 import RoomModel from "../room"
 
 const styles = {
@@ -29,16 +29,13 @@ const styles = {
   arrowIcon: "w-8 h-8 text-black"
 }
 
-export default function HeroSection() {
+export default function Hero() {
   const scrollToNextSection = () => {
-    const nextSection = document.querySelector('[data-section="next"]')
+    const nextSection = document.querySelector("#about, #projects, section:nth-of-type(2)");
     if (nextSection) {
-      nextSection.scrollIntoView({ behavior: 'smooth' })
-    } else {
-      // Fallback: scroll down by viewport height
-      window.scrollBy({ top: window.innerHeight, behavior: 'smooth' })
+      nextSection.scrollIntoView({ behavior: "smooth" });
     }
-  }
+  };
 
   return (
     <div className={styles.container}>

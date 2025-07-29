@@ -4,6 +4,7 @@ import React, { Suspense, useEffect } from "react"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls, Environment, useGLTF } from "@react-three/drei"
 import dynamic from "next/dynamic"
+import * as THREE from "three"
 
 // Your room model component
 const RoomModel3D: React.FC = () => {
@@ -13,14 +14,18 @@ const RoomModel3D: React.FC = () => {
   const clonedScene = scene.clone()
   
   // Remove any wireframe or bounding box helpers
-  clonedScene.traverse((child: any) => {
-    if (child.isMesh) {
+  clonedScene.traverse((child: THREE.Object3D) => {
+    if ((child as THREE.Mesh).isMesh) {
+      const mesh = child as THREE.Mesh
       // Ensure material is not wireframe
-      if (child.material) {
-        child.material.wireframe = false
+      if (mesh.material) {
+        const material = mesh.material as THREE.Material
+        if ('wireframe' in material) {
+          (material as any).wireframe = false
+        }
         // Remove any debug materials
-        if (child.material.name && child.material.name.includes('bbox')) {
-          child.visible = false
+        if (material.name && material.name.includes('bbox')) {
+          mesh.visible = false
         }
       }
     }
@@ -46,16 +51,6 @@ const RoomModel3D: React.FC = () => {
 const LoadingSpinner: React.FC = () => (
   <div className="flex items-center justify-center w-full h-full bg-gray-100 rounded-2xl">
     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600"></div>
-  </div>
-)
-
-// Error fallback component
-const ErrorFallback: React.FC = () => (
-  <div className="flex items-center justify-center w-full h-full bg-red-50 rounded-2xl border-2 border-red-200">
-    <div className="text-center p-4">
-      <div className="text-red-600 font-medium mb-2">3D Model Unavailable</div>
-      <div className="text-sm text-red-500">Your browser may not support WebGL</div>
-    </div>
   </div>
 )
 
@@ -85,7 +80,7 @@ const ThreeJSCanvas: React.FC = () => {
       linear={false}
       flat={false}
       frameloop="demand"
-      onCreated={({ gl }) => {
+      onCreated={() => {
         console.log('Three.js WebGL context created')
       }}
     >
