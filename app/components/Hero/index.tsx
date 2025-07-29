@@ -31,7 +31,7 @@ const styles = {
 
 export default function Hero() {
   const scrollToNextSection = () => {
-    const nextSection = document.querySelector("#about, #projects, section:nth-of-type(2)");
+    const nextSection = document.querySelector("#work");
     if (nextSection) {
       nextSection.scrollIntoView({ behavior: "smooth" });
     }
