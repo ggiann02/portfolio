@@ -36,7 +36,7 @@ export default function Footer() {
                 <span className={styles.profileName}>Giorgia Giannico</span>
               </div>
               <p className={styles.profileDescription}>
-                UI/UX Designer crafting beautiful and functional digital experiences. Let's work together to bring your
+                UI/UX Designer crafting beautiful and functional digital experiences. Let&rsquo;s work together to bring your
                 ideas to life.
               </p>
               <div className={styles.socialLinks}>
