@@ -26,7 +26,7 @@ const styles = {
   
   // Project cards
   projectLink: "group relative aspect-square overflow-hidden cursor-pointer block",
-  projectImage: "w-full h-full object-cover transition-transform duration-500 group-hover:scale-110",
+  projectImage: "object-cover transition-transform duration-500 group-hover:scale-110",
   
   // Overlay
   overlay: "absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-center items-center p-6 text-center",
@@ -49,34 +49,34 @@ const styles = {
 const projects = [
   {
     id: 1,
-    title: "E-commerce Mobile App",
-    description: "Complete redesign of a fashion e-commerce app focusing on user experience and conversion optimization.",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["Mobile Design", "UX Research", "Prototyping"],
+    title: "Diabolum in Tabula",
+    description: "Board game design using Laser Cutting and Vinyl printing techniques.",
+    image: "/Diabolum_1.png",
+    tags: ["Laser Cutting", "Digital Fabrication", "Adobe Illustrator"],
     link: "#",
   },
   {
     id: 2,
-    title: "SaaS Dashboard",
-    description: "Analytics dashboard for a B2B SaaS platform with complex data visualization and user management.",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["Web Design", "Data Visualization", "UI Design"],
+    title: "Montessori Trolley Problem",
+    description: "Children's toy design using 3D modeling, 3D printing, and surfacing techniques.",
+    image: "/Trolley_cover.JPG",
+    tags: ["3D Printing", "Digital Fabrication", "3D Modeling"],
     link: "#",
   },
   {
     id: 3,
-    title: "Banking App Redesign",
-    description: "Modern redesign of a banking application focusing on accessibility and user trust.",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["Mobile Design", "Accessibility", "Financial UX"],
+    title: "Eat the Metaballs",
+    description: "GLSL shader-based game design with a focus on interactive graphics.",
+    image: "/Metaball_cover2.png",
+    tags: ["Game Design", "Interactive Graphics", "GLSL"],
     link: "#",
   },
   {
     id: 4,
-    title: "Design System",
-    description: "Comprehensive design system for a tech startup including components, patterns, and guidelines.",
-    image: "/placeholder.svg?height=300&width=400",
-    tags: ["Design Systems", "Component Library", "Documentation"],
+    title: "Recursive Raytracing",
+    description: "A project focused on advanced rendering techniques using recursive raytracing algorithms.",
+    image: "/Raytracing_cover.png",
+    tags: ["Rendering", "Raytracing", "Computer Graphics"],
     link: "#",
   },
   {
@@ -118,11 +118,13 @@ export default function Work() {
               className={styles.projectLink}
             >
               <Image
-                src={project.image || "/placeholder.svg"}
+                src={project.image || "/Diabolum_1.png"}
                 alt={project.title}
-                width={400}
-                height={400}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className={styles.projectImage}
+                quality={95}
+                priority={project.id <= 3}
               />
 
               {/* Hover Overlay */}

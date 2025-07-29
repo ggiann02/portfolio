@@ -1,5 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import React, { Suspense, useRef } from "react"
+import RoomModel from "../room"
 
 const styles = {
   container: "min-h-screen bg-white",
@@ -15,6 +17,7 @@ const styles = {
   heading: "text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight tracking-tight",
   ctaButton: "bg-black text-white hover:bg-gray-800 px-8 py-3 text-sm font-medium tracking-wider rounded-none",
   rightColumn: "w-full lg:w-1/2",
+  roomModel: "w-full h-[500px]",
   imagePlaceholder: "aspect-[4/3] bg-gray-300 rounded-2xl w-full",
   mobileNav: "md:hidden fixed bottom-6 left-6 right-6",
   mobileNavContent: "bg-white border border-gray-200 rounded-lg shadow-lg p-4",
@@ -76,10 +79,12 @@ export default function HeroSection() {
             </Button>
           </div>
 
-          {/* Right Column - Image/Visual Content */}
           <div className={styles.rightColumn}>
-            <div className={styles.imagePlaceholder}></div>
+            <div className={styles.roomModel}>
+              <RoomModel />
+            </div>
           </div>
+
         </div>
       </main>
 
